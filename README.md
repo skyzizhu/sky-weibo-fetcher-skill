@@ -106,7 +106,7 @@ pip3 install requests
 ## 🔧 手动运行
 
 ```bash
-python3 friends_weibo_fetcher.py
+python3 scripts/friends_weibo_fetcher.py
 ```
 
 ## 🛠️ 自定义配置
@@ -161,7 +161,7 @@ rm data/friends_weibo_cache.json
 
 ```bash
 rm data/friends_weibo_cache.json
-python3 friends_weibo_fetcher.py
+python3 scripts/friends_weibo_fetcher.py
 ```
 
 ### 测试不筛选（推送所有微博）
@@ -173,7 +173,7 @@ python3 friends_weibo_fetcher.py
 2. 清空缓存并运行：
    ```bash
    rm data/friends_weibo_cache.json
-   python3 friends_weibo_fetcher.py
+   python3 scripts/friends_weibo_fetcher.py
    ```
 
 ## ⚠️ 注意事项
@@ -190,7 +190,7 @@ python3 friends_weibo_fetcher.py
 
 1. 手动运行脚本，查看错误：
    ```bash
-   python3 friends_weibo_fetcher.py
+   python3 scripts/friends_weibo_fetcher.py
    ```
 
 ## 🎯 使用建议

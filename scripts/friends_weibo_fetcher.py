@@ -21,12 +21,13 @@ import re
 
 # ==================== 配置区域 ====================
 
-# 获取脚本所在目录
+# 获取脚本所在目录与项目根目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(SCRIPT_DIR)
 
 # 配置文件路径
-CONFIG_FILE = os.path.join(SCRIPT_DIR, "weibo_config.json")
-CACHE_FILE = os.path.join(SCRIPT_DIR, "data", "friends_weibo_cache.json")
+CONFIG_FILE = os.path.join(BASE_DIR, "weibo_config.json")
+CACHE_FILE = os.path.join(BASE_DIR, "data", "friends_weibo_cache.json")
 
 # API 基础 URL
 WEIBO_API_BASE = "https://api.weibo.com/2"

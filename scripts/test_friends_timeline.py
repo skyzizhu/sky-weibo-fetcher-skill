@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 """
 测试 statuses/friends_timeline 接口
 """
@@ -7,7 +10,7 @@ import json
 from datetime import datetime
 
 # 从配置文件加载
-with open('weibo_config.json', 'r', encoding='utf-8') as f:
+with open(os.path.join(BASE_DIR, 'weibo_config.json'), 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 ACCESS_TOKEN = config['access_token']

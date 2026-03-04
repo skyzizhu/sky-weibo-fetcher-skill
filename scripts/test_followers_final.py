@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 """
-获取粉丝列表及粉丝最新微博
+使用正确的API端点获取粉丝列表和粉丝微博
 """
 import requests
 import json
 from datetime import datetime
-import re
 
 # 从配置文件加载
-with open('weibo_config.json', 'r', encoding='utf-8') as f:
+with open(os.path.join(BASE_DIR, 'weibo_config.json'), 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 ACCESS_TOKEN = config['access_token']
@@ -18,14 +20,13 @@ print("=" * 60)
 print("🔍 获取粉丝列表及粉丝微博")
 print("=" * 60)
 
-# ==================== 获取粉丝列表 ====================
-
+# 第一步：获取粉丝列表
 print(f"\n📋 正在获取用户 {UID} 的粉丝列表...")
-followers_url = "https://api.weibo.com/2/friendships/followers.json"
+followers_url = "https://api.weibo.cn/2/friendships/followers"
 params = {
     'access_token': ACCESS_TOKEN,
     'uid': UID,
-    'count': 20,
+    'count': 20,  # 获取20个粉丝
     'cursor': 0
 }
 
@@ -76,8 +77,7 @@ try:
         if description:
             print(f"   简介: {description}")
 
-    # ==================== 获取粉丝微博 ====================
-
+    # 第二步：获取粉丝的最新微博
     print("\n" + "=" * 60)
     print("📝 获取粉丝最新微博（前5位，每人3条）:")
     print("=" * 60)
@@ -90,8 +90,7 @@ try:
 
         print(f"\n{i}. 正在获取 {follower_name} 的微博...")
 
-        # 使用正确的API端点
-        user_timeline_url = "https://api.weibo.com/2/statuses/user_timeline.json"
+        user_timeline_url = "https://api.weibo.cn/2/statuses/user_timeline"
         params_timeline = {
             'access_token': ACCESS_TOKEN,
             'uid': follower_uid,
@@ -132,39 +131,30 @@ try:
                 reposts_count = status.get('reposts_count', 0)
                 comments_count = status.get('comments_count', 0)
                 attitudes_count = status.get('attitudes_count', 0)
-                weibo_id = status.get('id', '')
 
                 # 清理文本（去除HTML标签）
+                import re
                 weibo_text_clean = re.sub(r'<[^>]+>', '', weibo_text)
-
-                # 获取微博链接
-                weibo_url = f"https://weibo.com/{follower_uid}/{weibo_id}"
 
                 print(f"\n   📌 微博 {j}:")
                 print(f"   内容: {weibo_text_clean}")
                 print(f"   时间: {created_at}")
                 print(f"   互动: 转发{reposts_count} 评论{comments_count} 点赞{attitudes_count}")
-                print(f"   链接: {weibo_url}")
 
                 all_weibo.append({
                     'follower_name': follower_name,
                     'follower_uid': follower_uid,
-                    'weibo_id': str(weibo_id),
                     'text': weibo_text_clean,
                     'created_at': created_at,
                     'reposts_count': reposts_count,
                     'comments_count': comments_count,
-                    'attitudes_count': attitudes_count,
-                    'weibo_url': weibo_url
+                    'attitudes_count': attitudes_count
                 })
 
         except Exception as e:
             print(f"   ❌ 获取失败: {e}")
-            import traceback
-            traceback.print_exc()
 
-    # ==================== 总结 ====================
-
+    # 第三步：总结
     print("\n" + "=" * 60)
     print("📊 测试总结:")
     print("=" * 60)
@@ -173,34 +163,14 @@ try:
 
     if len(all_weibo) > 0:
         print(f"\n📈 数据质量:")
-
-        # 计算互动数
-        total_interactions = sum([w['reposts_count'] + w['comments_count'] + w['attitudes_count'] for w in all_weibo])
-        avg_interactions = total_interactions / len(all_weibo)
-
-        # 计算微博长度
-        avg_length = sum([len(w['text']) for w in all_weibo]) / len(all_weibo)
-
+        avg_interactions = sum([w['reposts_count'] + w['comments_count'] + w['attitudes_count'] for w in all_weibo]) / len(all_weibo)
         print(f"   - 平均互动数: {avg_interactions:.1f}")
-        print(f"   - 平均微博长度: {avg_length:.0f} 字")
-
-        # 按互动数排序
-        sorted_weibo = sorted(all_weibo, key=lambda x: x['reposts_count'] + x['comments_count'] + x['attitudes_count'], reverse=True)
-
-        print(f"\n🏆 最受欢迎的3条微博:")
-        for i, weibo in enumerate(sorted_weibo[:3], 1):
-            total = weibo['reposts_count'] + weibo['comments_count'] + weibo['attitudes_count']
-            print(f"\n{i}. @{weibo['follower_name']}")
-            print(f"   内容: {weibo['text'][:50]}...")
-            print(f"   互动: 转发{weibo['reposts_count']} 评论{weibo['comments_count']} 点赞{weibo['attitudes_count']} (总计: {total})")
-            print(f"   链接: {weibo['weibo_url']}")
 
         print(f"\n💡 建议:")
         print(f"   - 可以按时间顺序整理粉丝微博")
         print(f"   - 可以按互动数排序（转发/评论/点赞）")
-        print(f"   - 可以设置互动数阈值，只推送优质内容（如 >10）")
-        print(f"   - 可以过滤广告、刷屏等低质量内容")
-        print(f"   - 可以按粉丝影响力排序（粉丝数、微博数）")
+        print(f"   - 可以过滤低质量内容（广告、刷屏等）")
+        print(f"   - 可以设置互动数阈值，只推送优质内容")
 
 except Exception as e:
     print(f"❌ 发生错误: {e}")

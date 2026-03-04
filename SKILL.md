@@ -78,7 +78,7 @@ cp weibo_config.example.json weibo_config.json
 ### 5. 测试运行
 
 ```bash
-python3 friends_weibo_fetcher.py
+python3 scripts/friends_weibo_fetcher.py
 ```
 
 ## 配置参数
@@ -123,7 +123,7 @@ python3 friends_weibo_fetcher.py
 ### 手动运行
 
 ```bash
-python3 friends_weibo_fetcher.py
+python3 scripts/friends_weibo_fetcher.py
 ```
 
 ## 输出格式
