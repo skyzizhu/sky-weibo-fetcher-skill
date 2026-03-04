@@ -1,0 +1,10 @@
+{
+  "app_key": "YOUR_APP_KEY",
+  "app_secret": "YOUR_APP_SECRET",
+  "access_token": "YOUR_ACCESS_TOKEN",
+  "uid": "YOUR_UID",
+  "fetch_count": 100,
+  "page": 1,
+  "push_count": 10,
+  "keywords": []
+}
