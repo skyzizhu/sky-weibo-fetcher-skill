@@ -7,7 +7,6 @@
 2. 关键词筛选（科技、AI、智能体、大模型、机器人等）
 3. 去重（避免重复推送）
 4. 格式化输出
-5. 推送到飞书群
 """
 
 import requests
@@ -46,7 +45,6 @@ def load_config() -> Dict:
         "app_secret": "",
         "access_token": "",
         "uid": "",
-        "feishu_chat_id": "oc_6f7d6e06d8e51b399f03669a5c3849e6",
         "fetch_count": DEFAULT_FETCH_COUNT,
         "page": DEFAULT_PAGE,
         "push_count": DEFAULT_PUSH_COUNT,
@@ -69,7 +67,6 @@ def load_config() -> Dict:
 
 # 加载配置
 WEIBO_CONFIG = load_config()
-FEISHU_CHAT_ID = WEIBO_CONFIG.get("feishu_chat_id", "oc_6f7d6e06d8e51b399f03669a5c3849e6")
 
 # 从配置文件读取关键词、请求数量、页数和推送数量
 KEYWORDS = WEIBO_CONFIG.get("keywords", DEFAULT_KEYWORDS)
@@ -334,8 +331,8 @@ def fetch_and_filter_weibo() -> List[Dict]:
 
     return relevant_weibos
 
-def format_feishu_message(weibos: List[Dict]) -> str:
-    """格式化飞书消息"""
+def format_output_message(weibos: List[Dict]) -> str:
+    """格式化输出消息"""
     if not weibos:
         return "📊 已关注用户微博更新\n━━━━━━━━━━━━━━━━\n\n暂无相关内容"
 
@@ -345,9 +342,9 @@ def format_feishu_message(weibos: List[Dict]) -> str:
         ""
     ]
 
-    # 使用配置的推送数量
-    # 如果 push_count <= 0，推送所有匹配到的微博
-    # 如果 push_count > 0，推送指定数量的微博
+    # 使用配置的输出数量
+    # 如果 push_count <= 0，输出所有匹配到的微博
+    # 如果 push_count > 0，输出指定数量的微博
     if PUSH_COUNT <= 0:
         push_count = len(weibos)
     else:
@@ -378,18 +375,18 @@ def format_feishu_message(weibos: List[Dict]) -> str:
 
     return "\n".join(lines)
 
-def send_to_feishu(message: str) -> bool:
-    """发送给当前用户"""
-    print("📤 推送给用户...")
+def output_message(message: str) -> bool:
+    """输出到标准输出"""
+    print("📤 输出结果...")
 
     try:
-        # 直接输出消息内容（OpenClaw会自动发送到当前会话）
+        # 直接输出消息内容
         print(f"\n{message}\n")
-        print("✅ 消息已准备就绪")
+        print("✅ 输出已准备就绪")
         return True
 
     except Exception as e:
-        print(f"❌ 推送失败: {e}")
+        print(f"❌ 输出失败: {e}")
         return False
 
 # ==================== 主函数 ====================
@@ -411,13 +408,13 @@ def main():
     relevant_weibos = fetch_and_filter_weibo()
 
     # 格式化消息
-    message = format_feishu_message(relevant_weibos)
+    message = format_output_message(relevant_weibos)
 
-    # 推送到飞书
+    # 输出结果
     if relevant_weibos:
-        send_to_feishu(message)
+        output_message(message)
     else:
-        print("ℹ️ 暂无相关内容，跳过推送")
+        print("ℹ️ 暂无相关内容，跳过输出")
 
     print(f"⏰ 结束时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)

@@ -7,7 +7,6 @@
 2. 关键词筛选（科技、AI、智能体、大模型、机器人）
 3. 去重（避免重复推送）
 4. 格式化输出
-5. 推送到飞书群
 """
 
 import requests
@@ -46,8 +45,7 @@ def load_config() -> Dict:
         "app_key": "",
         "app_secret": "",
         "access_token": "",
-        "uid": "",
-        "feishu_chat_id": "oc_6f7d6e06d8e51b399f03669a5c3849e6"
+        "uid": ""
     }
 
     # 尝试从JSON文件加载
@@ -67,7 +65,6 @@ def load_config() -> Dict:
 
 # 加载配置
 WEIBO_CONFIG = load_config()
-FEISHU_CHAT_ID = WEIBO_CONFIG.get("feishu_chat_id", "oc_6f7d6e06d8e51b399f03669a5c3849e6")
 
 # ==================== 工具函数 ====================
 
@@ -274,8 +271,8 @@ def fetch_and_filter_weibo() -> List[Dict]:
     
     return relevant_weibos
 
-def format_feishu_message(weibos: List[Dict]) -> str:
-    """格式化飞书消息"""
+def format_output_message(weibos: List[Dict]) -> str:
+    """格式化输出消息"""
     if not weibos:
         return "📊 今日微博内容更新\n━━━━━━━━━━━━━━━━\n\n暂无相关内容"
     
@@ -299,49 +296,16 @@ def format_feishu_message(weibos: List[Dict]) -> str:
     
     return "\n".join(lines)
 
-def send_to_feishu(message: str) -> bool:
-    """发送到飞书"""
-    print("📤 推送到飞书群...")
-
-    # 检查chat_id是否配置
-    if not FEISHU_CHAT_ID or FEISHU_CHAT_ID == "oc_6f7d6e06d8e51b399f03669a5c3849e6":
-        print("⚠️ 未配置飞书chat_id，跳过推送")
-        print(f"💡 消息内容：\n{message}")
-        return False
+def output_message(message: str) -> bool:
+    """输出到标准输出"""
+    print("📤 输出结果...")
 
     try:
-        # 使用 subprocess 调用 openclaw CLI 发送消息
-        import subprocess
-
-        cmd = [
-            "openclaw", "message", "send",
-            "--channel", "feishu",
-            "--target", FEISHU_CHAT_ID,
-            "--message", message
-        ]
-
-        print(f"🔧 执行命令: {' '.join(cmd)}")
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-
-        if result.returncode == 0:
-            print("✅ 消息已成功推送到飞书")
-            return True
-        else:
-            print(f"❌ 推送失败 (返回码: {result.returncode})")
-            print(f"标准输出: {result.stdout}")
-            print(f"错误输出: {result.stderr}")
-            return False
-
-    except subprocess.TimeoutExpired:
-        print("❌ 推送超时")
-        return False
+        print(f"\n{message}\n")
+        print("✅ 输出已准备就绪")
+        return True
     except Exception as e:
-        print(f"❌ 推送失败: {e}")
+        print(f"❌ 输出失败: {e}")
         return False
 
 # ==================== 主函数 ====================
@@ -363,13 +327,13 @@ def main():
     relevant_weibos = fetch_and_filter_weibo()
     
     # 格式化消息
-    message = format_feishu_message(relevant_weibos)
+    message = format_output_message(relevant_weibos)
     
-    # 推送到飞书
+    # 输出结果
     if relevant_weibos:
-        send_to_feishu(message)
+        output_message(message)
     else:
-        print("ℹ️ 今日无相关内容，跳过推送")
+        print("ℹ️ 今日无相关内容，跳过输出")
     
     print(f"⏰ 结束时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
