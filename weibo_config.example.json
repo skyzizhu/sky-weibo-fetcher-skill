@@ -1,10 +1,18 @@
 {
+  "_comment_app_key": "微博开放平台 App Key",
   "app_key": "YOUR_APP_KEY",
+  "_comment_app_secret": "微博开放平台 App Secret",
   "app_secret": "YOUR_APP_SECRET",
+  "_comment_access_token": "OAuth 授权后的 Access Token",
   "access_token": "YOUR_ACCESS_TOKEN",
+  "_comment_uid": "微博用户ID",
   "uid": "YOUR_UID",
+  "_comment_fetch_count": "每页返回的记录条数（1-100）",
   "fetch_count": 100,
+  "_comment_page": "获取的页数（1-N），页数越大获取越多",
   "page": 1,
+  "_comment_push_count": "输出的微博数量上限；<=0 表示输出全部匹配",
   "push_count": 10,
+  "_comment_keywords": "关键词列表，空数组表示不筛选",
   "keywords": []
 }
